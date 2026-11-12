@@ -1,0 +1,1134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Poseidon — Global freight desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=block">
+<style>
+:root {
+  color-scheme: dark;
+  --u: min(100vw / 1280, 100vh / 760);
+  --bg: #071219;
+  --panel: #0d202b;
+  --well: #091923;
+  --surface: #132b38;
+  --surface-hover: #1c3a47;
+  --edge: #2c4756;
+  --edge-hover: #558191;
+  --ink: #f1f8fa;
+  --muted: #a9c0cc;
+  --label: #d5e6ec;
+  --sea-glass: #9de3d6;
+  --foam: #d1f3ee;
+  --button-ink: #08242d;
+  --accent: color-mix(in srgb, var(--sea-glass) 72%, var(--location-accent, var(--sea-glass)));
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --header: 68px;
+}
+@supports (height: 100svh) {
+  :root { --u: min(100vw / 1280, 100svh / 760); }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-padding-top: calc(var(--header) + 20px); }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 15px/1.6 "Plus Jakarta Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p { margin: 0; }
+h2, h3 { line-height: 1.2; letter-spacing: -.035em; }
+h2 { font-size: clamp(24px, 3vw, 35px); font-weight: 600; }
+h3 { font-size: 17px; font-weight: 600; }
+h2 + p, h3 + p { margin-top: 9px; }
+p { color: var(--muted); }
+a { color: var(--accent); text-underline-offset: .2em; }
+small, .eyebrow { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .13em; }
+:focus-visible { outline: 2px solid var(--sea-glass); outline-offset: 3px; }
+
+.site-header {
+  position: sticky; top: 0; z-index: 10; height: var(--header);
+  background: color-mix(in srgb, var(--bg) 93%, transparent); border-bottom: 1px solid var(--edge);
+  backdrop-filter: blur(20px);
+}
+.header-inner { width: min(100% - 80px, 1360px); height: 100%; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand { display: inline-flex; align-items: center; gap: 9px; color: var(--ink); text-decoration: none; }
+.brand span { font-size: 16px; font-weight: 800; letter-spacing: .125em; }
+.trident { width: 23px; height: 28px; color: var(--sea-glass); }
+.site-nav { display: flex; align-items: center; gap: clamp(22px, 3vw, 46px); }
+.site-nav a { color: var(--label); font-size: 13px; font-weight: 600; text-decoration: none; transition: color .18s ease, background-color .18s ease; }
+.site-nav a:hover, .hero-index:hover { color: #fff; }
+.mobile-billing, .menu-toggle { display: none; }
+
+button, input, select, textarea { font: inherit; }
+button, input:not([type=range], [type=checkbox]), select, textarea {
+  min-width: 0; max-width: 100%; border: 1px solid var(--edge); border-radius: 9px;
+  background: var(--surface); color: var(--ink); padding: 9px 13px;
+}
+button, .button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  min-height: 40px; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, translate .22s var(--ease-out), scale .16s var(--ease-out);
+}
+button:hover:not(:disabled), button[aria-pressed=true] { background: var(--surface-hover); border-color: var(--edge-hover); }
+button:disabled { opacity: .55; cursor: default; }
+.button { padding: 9px 16px; border: 1px solid #fff2; border-radius: 999px; color: var(--ink); text-decoration: none; }
+.button svg { width: 14px; height: 14px; flex: none; transition: translate .24s var(--ease-out); }
+.button-outline { background: #0c2432b8; backdrop-filter: blur(12px); }
+.button-outline:hover { background: var(--surface-hover); border-color: var(--edge-hover); }
+.button-primary, .controls button[type=submit], #ask button, #findShipment {
+  background: var(--foam); color: var(--button-ink); border-color: transparent;
+}
+.button-primary:hover, .controls button[type=submit]:hover, #ask button:hover, #findShipment:hover {
+  background: var(--sea-glass); color: var(--button-ink); border-color: transparent;
+}
+
+.hero {
+  position: relative; isolation: isolate; display: grid; place-items: center;
+  min-height: calc(100vh - var(--header)); min-height: calc(100svh - var(--header));
+  padding: 74px 22px 110px; text-align: center; overflow: hidden; background: var(--bg);
+}
+.hero-media, .hero-media::before, .hero-media::after, .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-media {
+  z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 65%, #173b4a, var(--bg) 71%);
+}
+.hero-media.has-poster::before {
+  content: "";
+  background: url("https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/82e7eb75-c65f-490a-99b5-f3d1cad54200.webp") center 44% / cover no-repeat;
+}
+.hero-media::before, .hero-video { filter: hue-rotate(-64deg) saturate(.78); }
+.hero-video { opacity: 0; object-fit: cover; object-position: center 44%; }
+.hero-video.is-active { opacity: 1; transition: opacity .9s linear; }
+.hero-video.is-incoming { z-index: 1; }
+.hero-media::after {
+  content: ""; z-index: 2;
+  background: linear-gradient(180deg, #07172255, #09213024 24%, #071b2b56 69%, var(--bg) 100%),
+    radial-gradient(ellipse at center, #07182362, transparent 72%);
+}
+.hero-inner { margin-top: calc(22 * var(--u)); max-width: 680px; }
+.hero .eyebrow { color: var(--sea-glass); font-size: 11px; }
+.hero h1 { margin: calc(18 * var(--u)) 0; font-size: max(66px, calc(104 * var(--u))); font-weight: 500; line-height: .97; letter-spacing: -.05em; color: #fff; }
+.hero-line, .hero-line > span { display: block; }
+.hero-copy { max-width: 39ch; margin: 0 auto; color: var(--label); font-weight: 500; font-size: clamp(15px, calc(17 * var(--u)), 22px); line-height: 1.65; }
+.hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-top: 26px; }
+.hero-actions .button { min-height: 45px; padding-inline: 19px; }
+.hero-index {
+  position: absolute; bottom: 27px; left: 50%; transform: translateX(-50%);
+  display: grid; justify-items: center; gap: 6px; color: var(--label); font-size: 12px;
+  font-weight: 600; text-decoration: none; white-space: nowrap;
+}
+.hero-index svg { width: 16px; height: 16px; transition: translate .24s var(--ease-out); }
+.motion-toggle { position: absolute; bottom: 28px; right: max(24px, calc((100vw - 1280px) / 2)); width: 42px; padding: 0; border-radius: 50%; background: #0c2432db; }
+.motion-toggle svg { width: 15px; height: 15px; }
+.motion-toggle[aria-pressed=true] .pause-icon, .motion-toggle[aria-pressed=false] .play-icon { display: none; }
+
+.entrance-pending .hero-line { overflow: hidden; padding-block: .15em; margin-block: -.15em; }
+.entrance-pending .hero-line > span { transform: translateY(110%); }
+.entrance-pending :is(.hero .eyebrow, .hero-copy, .hero-actions .button) { opacity: 0; }
+.entrance-pending .hero-media { opacity: .72; transform: scale(1.035); }
+.entrance-running .hero-media { animation: globe-arrive 1.05s var(--ease-out) both; }
+.entrance-running .hero-line > span { animation: line-rise .82s var(--ease-out) .08s both; }
+.entrance-running .hero-line + .hero-line > span { animation-delay: .18s; }
+.entrance-running .hero .eyebrow { animation: lift .55s var(--ease-out) .26s both; }
+.entrance-running .hero-copy { animation: lift .60s var(--ease-out) .38s both; }
+.entrance-running .hero-actions .button { animation: lift .57s var(--ease-out) .49s both; }
+.entrance-running .hero-actions .button + .button { animation-delay: .57s; }
+@keyframes line-rise { from { transform: translateY(110%); } to { transform: translateY(0); } }
+@keyframes lift { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes globe-arrive {
+  from { opacity: .72; transform: scale(1.035); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes component-reveal {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes menu-open {
+  from { opacity: .65; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+  .reveal-pending { opacity: 0; }
+  .reveal-entering {
+    animation: component-reveal .68s var(--ease-out) var(--reveal-delay, 0ms) both;
+  }
+  #milestones.reveal-entering li {
+    animation: component-reveal .48s var(--ease-out) var(--milestone-delay, 0ms) both;
+  }
+  #milestones.reveal-entering li:nth-child(2) { --milestone-delay: .07s; }
+  #milestones.reveal-entering li:nth-child(n + 3) { --milestone-delay: .14s; }
+  :is(button:not(:disabled), .button):active { scale: .97; }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .hero-actions .button:hover { translate: 0 -2px; }
+  .button:hover svg { translate: 3px 0; }
+  .hero-index:hover svg { translate: 0 3px; }
+}
+
+.workspace { width: min(100% - 80px, 1280px); margin: auto; padding-block: 35px 46px; }
+.card { min-width: 0; padding: clamp(18px, 3vw, 32px); background: var(--panel); border: 1px solid var(--edge); border-radius: 18px; }
+.workspace > .card + .card, #trade { margin-top: 24px; }
+.atlas-heading { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; }
+.atlas-heading { margin-bottom: 20px; }
+.atlas-heading h2 { font-size: clamp(28px, 4vw, 42px); }
+.atlas-heading p { margin-top: 6px; }
+.atlas-label { display: block; margin-bottom: 6px; color: var(--accent); }
+.atlas-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 29%); gap: 14px; }
+.atlas-stage {
+  position: relative; overflow: hidden; isolation: isolate; border: 1px solid var(--edge); border-radius: 13px;
+  background: radial-gradient(ellipse at 50% 46%, color-mix(in srgb, var(--accent) 10%, var(--surface)), var(--well) 71%);
+}
+.atlas-stage::before {
+  position: absolute; inset: 0; content: ""; z-index: -1;
+  background-image: radial-gradient(#9de3d630 1px, transparent 1px);
+  background-size: 18px 18px; mask-image: radial-gradient(ellipse, transparent 35%, #000 90%);
+}
+#globe { width: 100%; height: clamp(400px, 59vh, 570px); display: block; touch-action: pan-y; cursor: grab; }
+#globe:active { cursor: grabbing; }
+.atlas-controls { position: absolute; bottom: 11px; right: 11px; }
+.atlas-controls button { background: color-mix(in srgb, var(--surface) 92%, transparent); }
+.atlas-controls button:hover { background: var(--surface-hover); }
+.atlas-directory { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--well); border: 1px solid var(--edge); border-radius: 13px; overflow: hidden; }
+.atlas-search { display: grid; gap: 6px; padding: 15px; }
+.atlas-search label, .planner-fields label, #shipmentPicker label { font-size: 13px; color: var(--label); font-weight: 600; }
+.atlas-search select { margin-bottom: 4px; }
+#locationCount { color: var(--muted); font-size: 12px; }
+.routes { display: flex; align-content: start; flex-wrap: wrap; gap: 7px; }
+#offices { flex: 1 1 0; min-height: 130px; overflow: auto; padding: 12px; border-top: 1px solid var(--edge); scrollbar-color: var(--edge-hover) transparent; }
+#offices button, .lane-button { min-height: 33px; font-size: 12px; padding: 5px 9px; }
+.lane-button { border-left: 3px solid var(--lane, var(--accent)); }
+
+.metrics, .layout, .port-layout, .tracking-layout, .side { display: grid; gap: 16px; }
+.metrics, .layout, .tracking-layout { margin-block: 19px; }
+.metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.metrics .card { padding: 16px; background: var(--well); box-shadow: none; }
+.metrics strong { display: block; color: var(--accent); font-size: clamp(19px, 2.8vw, 31px); letter-spacing: -.04em; overflow-wrap: anywhere; }
+.layout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.port-layout, .tracking-layout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.side { align-content: start; }
+.controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.controls input[type=text] { flex: 1 1 230px; }
+input[type=range], input[type=checkbox] { accent-color: var(--accent); }
+input[type=range] { width: 100%; margin: 10px 0; }
+.row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 10px 0; border-top: 1px solid var(--edge); }
+.row strong { text-align: right; }
+.result { margin-top: 12px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.result:empty, #trackingError:empty { display: none; }
+.scroll { overflow: auto; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: 11px 10px; border-bottom: 1px solid var(--edge); }
+th { font-size: 12px; color: var(--muted); font-weight: 700; }
+td { overflow-wrap: anywhere; }
+.signal { background: #15333c; }
+.planner-fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 18px 0 13px; }
+.planner-fields label { display: grid; gap: 6px; }
+.planner-cargo { grid-column: 1 / -1; }
+.planner-fields textarea { width: 100%; min-height: 78px; resize: vertical; }
+#wayfinder .layout, #finance .layout { margin-bottom: 0; }
+#wayfinder .layout > div, #finance .layout > div { padding: 16px; border: 1px solid var(--edge); border-radius: 12px; min-width: 0; }
+#wayfinder .layout .controls { margin-top: 10px; }
+#signals ul { padding-left: 20px; }
+#signals li + li { margin-top: 7px; }
+.location-map { margin: 0; min-width: 0; align-self: start; border: 1px solid var(--edge); border-radius: 13px; overflow: hidden; background: var(--well); }
+.location-map iframe { width: 100%; height: clamp(260px, 35vw, 370px); display: block; border: 0; }
+.location-map figcaption { padding: 8px 12px; font-size: 13px; }
+.disclosure { margin-top: 12px; }
+.disclosure summary { cursor: pointer; color: var(--label); font-weight: 600; }
+.disclosure p { margin-top: 8px; }
+.branch-picker { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.shipment-actions { margin-top: 14px; }
+#historyDate { margin-bottom: 10px; font-size: 13px; }
+#milestones time { color: var(--muted); }
+#portTitle, #trackingTitle, #officeName { margin-top: 5px; }
+#port .controls, #shipmentPicker, .service-layout .controls, .service-layout .controls + p { margin-top: 14px; }
+#portManifest section + section { margin-top: 12px; }
+#portManifest button { margin: 5px 5px 0 0; }
+#trackingError { margin-top: 8px; color: #ffbbbf; }
+#trackingLink { margin-right: 5px; }
+
+#milestones { margin: 0; padding-left: 22px; }
+#milestones li { padding: 7px 0 7px 5px; }
+#milestones li::marker { color: var(--accent); }
+#finance { margin-top: 17px; }
+#routes, #laneButtons { margin-top: 12px; }
+#trade summary { cursor: pointer; padding: 15px 18px; background: var(--panel); border: 1px solid var(--edge); border-radius: 12px; font-weight: 600; }
+#trade[open] summary { margin-bottom: 16px; }
+.service-layout { margin-top: 24px; }
+#paypal { margin-top: 0; }
+#trackingBilling, #syncStatus, #answer { padding: 11px 13px; background: var(--well); border: 1px solid var(--edge); border-radius: 8px; }
+footer { padding-top: 21px; margin-top: 25px; border-top: 1px solid var(--edge); }
+
+.customer-mode :is(.site-nav, .header-billing, .menu-toggle, .hero, #network, #port, #branch, #trade, #wayfinder, .service-layout, footer, #trackingLink, #shipmentPicker, #showShipment, #rerouteShipment, .tracking-heading, #trackingDraft, #billingSync, #trackingBilling) { display: none !important; }
+.customer-mode .workspace { max-width: 820px; }
+
+@media (max-width: 1160px) {
+  .menu-toggle { display: inline-flex; width: 46px; border-radius: 999px; }
+  .menu-toggle svg { width: 18px; height: 18px; }
+  .menu-toggle path {
+    transform-box: fill-box; transform-origin: center;
+    transition: transform .24s var(--ease-out), opacity .16s ease;
+  }
+  .menu-toggle[aria-expanded=true] path:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+  .menu-toggle[aria-expanded=true] path:nth-child(2) { opacity: 0; }
+  .menu-toggle[aria-expanded=true] path:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+  .header-billing { display: none; }
+  .site-nav {
+    display: none; position: absolute; top: calc(var(--header) - 4px); right: 24px;
+    width: min(290px, calc(100vw - 48px)); flex-direction: column; align-items: stretch; gap: 4px;
+    padding: 9px; background: var(--panel); border: 1px solid var(--edge); border-radius: 16px;
+    box-shadow: 0 18px 48px #0008;
+  }
+  .site-nav.is-open { display: flex; animation: menu-open .23s var(--ease-out) both; }
+  .site-nav a { padding: 10px 13px; border-radius: 8px; font-size: 14px; }
+  .site-nav a:hover { background: var(--surface); }
+  .mobile-billing { display: block; }
+}
+@media (max-width: 760px) {
+  :root { --header: 60px; }
+  .header-inner, .workspace { width: calc(100% - 32px); }
+  .workspace { padding-top: 20px; }
+  .site-nav { right: 16px; }
+  .atlas-grid, .layout, .port-layout, .tracking-layout { grid-template-columns: 1fr; }
+  #globe { height: clamp(300px, 56vh, 440px); }
+  #offices { flex: auto; min-height: 70px; max-height: 150px; }
+  .planner-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .metrics { gap: 8px; }
+  .metrics .card { padding: 11px; }
+  .metrics small { font-size: 10px; letter-spacing: .07em; }
+}
+@media (max-width: 552px) {
+  .hero { padding-block: 56px 90px; }
+  .hero h1 { font-size: clamp(47px, 12vw, 66px); margin: 15px 0 16px; }
+  .hero-copy { max-width: 32ch; }
+  .hero-actions { margin-top: 22px; }
+  .hero-index, .motion-toggle { bottom: 19px; }
+  .motion-toggle { right: 16px; }
+  .card { border-radius: 14px; }
+  #planResults .row { align-items: flex-start; flex-direction: column; }
+  th, td { padding-inline: 6px; }
+}
+@media (max-width: 390px) {
+  .metrics { grid-template-columns: 1fr; }
+  .metrics .card { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  .hero { min-height: 390px; padding-block: 25px 66px; }
+  .hero h1 { font-size: 52px; }
+  .hero-inner { margin-top: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  video.hero-video { visibility: hidden; }
+  .entrance-pending .hero-media { opacity: 1; transform: none; }
+  .entrance-pending .hero-line { overflow: visible; }
+  .entrance-pending .hero-line > span { transform: none; }
+  .entrance-pending :is(.hero .eyebrow, .hero-copy, .hero-actions .button) { opacity: 1; }
+}
+</style>
+
+<script>
+(() => {
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  if (motion.matches || location.hash || new URLSearchParams(location.search).has('track')) return;
+
+  const root = document.documentElement;
+  root.classList.add('entrance-pending');
+  let started = false;
+  let finished = false;
+  let timeout;
+
+  function finish() {
+    finished = true;
+    clearTimeout(timeout);
+    root.classList.remove('entrance-pending', 'entrance-running');
+    document.removeEventListener('animationend', finishOnLastAction);
+    document.removeEventListener('focusin', finish);
+    motion.removeEventListener('change', finish);
+  }
+
+  function finishOnLastAction(event) {
+    if (event.animationName === 'lift' && event.target.matches('.hero-actions .button:last-child')) finish();
+  }
+
+  function start() {
+    if (started || finished) return;
+    started = true;
+    clearTimeout(timeout);
+    root.classList.add('entrance-running');
+    document.addEventListener('animationend', finishOnLastAction);
+    timeout = setTimeout(finish, 2500);
+  }
+
+  document.addEventListener('focusin', finish, { once: true });
+  motion.addEventListener('change', finish, { once: true });
+  document.addEventListener('DOMContentLoaded', () => {
+    if (finished) return;
+    timeout = setTimeout(start, 900);
+    if (document.fonts) document.fonts.ready.then(start, start);
+    else start();
+  }, { once: true });
+})();
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label="Poseidon home"><svg class="trident" viewBox="0 0 48 56" aria-hidden="true"><path d="M24 1 31 15 27 13 27 35Q36 34 39 19L34 21 45 9 47 26 43 23Q42 39 27 41V54H21V41Q7 40 5 28L1 31 3 16 15 26 9 25Q11 34 21 35V13L17 15Z" fill="currentColor"/></svg><span>POSEIDON</span></a>
+    <button id="freightMenuToggle" class="menu-toggle" type="button" aria-label="Open menu" aria-controls="freightMenu" aria-expanded="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M3 5h14"/><path d="M3 10h14"/><path d="M3 15h14"/></svg></button>
+    <nav class="site-nav" id="freightMenu" aria-label="Freight navigation">
+      <a href="#network">Atlas</a>
+      <a href="#wayfinder">Plan &amp; reroute</a>
+      <a href="#tracking">Track shipment</a>
+      <a href="#branch">Finance</a>
+      <a href="#analyst">Analyst</a>
+      <a class="mobile-billing" href="#paypal">Sandbox billing</a>
+    </nav>
+    <a class="button button-outline header-billing" href="#paypal">Sandbox billing</a>
+  </div>
+</header>
+
+<main>
+<section class="hero" aria-labelledby="heroTitle">
+  <div class="hero-media" aria-hidden="true">
+    <noscript><img class="hero-video is-active" alt="" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/82e7eb75-c65f-490a-99b5-f3d1cad54200.webp"></noscript>
+  </div>
+  <template id="heroVideos">
+    <video class="hero-video is-active" muted loop playsinline preload="auto" disablepictureinpicture>
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_104036_bd6924f6-3c8e-417e-8465-6d03c8c2e9e6.mp4" type="video/mp4">
+    </video>
+    <video class="hero-video" muted loop playsinline preload="auto" disablepictureinpicture>
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_104036_bd6924f6-3c8e-417e-8465-6d03c8c2e9e6.mp4" type="video/mp4">
+    </video>
+  </template>
+  <div class="hero-inner">
+    <span class="eyebrow">GLOBAL FREIGHT DESK</span>
+    <h1 id="heroTitle"><span class="hero-line"><span>The ocean</span></span> <span class="hero-line"><span>in view.</span></span></h1>
+    <p class="hero-copy">Plan freight routes, track shipments, and explore port activity across your global network.</p>
+    <div class="hero-actions">
+      <a class="button button-primary" href="#wayfinder">Plan shipment <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a class="button button-outline" href="#tracking">Track shipment <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+  </div>
+  <a class="hero-index" href="#network">Explore the atlas <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v11M3 8l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  <button id="heroMotion" class="motion-toggle" type="button" aria-label="Pause background video" aria-pressed="false" hidden>
+    <svg class="pause-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5.5 3.5v9m5-9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <svg class="play-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="m5 3 8 5-8 5Z" fill="currentColor"/></svg>
+  </button>
+</section>
+<div class="workspace">
+<section id="network" class="card map" aria-labelledby="atlasTitle">
+  <div class="atlas-heading">
+    <div>
+      <small class="atlas-label" id="atlasLabel">GLOBAL NETWORK</small>
+      <h2 id="atlasTitle">Freight atlas</h2>
+      <p id="atlasCopy">Find a city or drag the globe to explore ports and trade routes.</p>
+    </div>
+    <a class="button button-outline" id="openPortMap" href="#port">Open port map</a>
+  </div>
+  <div class="atlas-grid">
+    <div class="atlas-stage">
+      <canvas id="globe" aria-label="Interactive globe. Select a city on the globe or in the location search."></canvas>
+      <div class="atlas-controls controls"><button id="rotation" aria-pressed="true">Pause rotation</button><button id="overview">Global view</button></div>
+    </div>
+    <div class="atlas-directory">
+      <div class="atlas-search">
+        <label for="citySearch">Find a city</label>
+        <input id="citySearch" type="search" placeholder="Search city or region" autocomplete="off">
+        <label for="mapLayer">Map layer</label>
+        <select id="mapLayer"><option value="all">Cities & trade routes</option><option value="offices">Company offices</option></select>
+        <span id="locationCount" role="status"></span>
+      </div>
+      <div class="routes" id="offices" aria-label="Locations"></div>
+    </div>
+  </div>
+  <div id="laneDetails" class="result" hidden>
+    <p id="laneSummary" aria-live="polite"></p>
+    <a id="compareLane" href="#wayfinder">Compare routes for this corridor</a>
+  </div>
+  <details class="disclosure" id="laneLibrary">
+    <summary>Browse trade lanes</summary>
+    <div id="laneButtons" class="routes" aria-label="Trade lanes"></div>
+  </details>
+</section>
+<section id="port" class="card" aria-labelledby="portTitle" hidden>
+  <div class="port-layout">
+    <figure class="location-map">
+      <iframe id="portMap" title="Port map" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <figcaption><a id="portMapLink" target="_blank" rel="noopener noreferrer">Open in OpenStreetMap</a></figcaption>
+    </figure>
+    <div>
+      <h2 id="portTitle"></h2>
+      <div class="controls"><button id="portSignals">Check port risks</button><button id="planFromPort">Plan from here</button></div>
+      <div id="portManifest" class="result"></div>
+    </div>
+  </div>
+</section>
+<section id="wayfinder" class="card">
+ <h2>Plan a new shipment</h2><p>Compare routes by transit time, cost, and emissions. Check news and weather for a port before deciding.</p>
+ <form id="planner">
+  <div class="planner-fields">
+   <label>Origin or current hub<select id="planOrigin"></select></label><label>Destination<select id="planDestination"></select></label>
+   <label>Avoid a waypoint<select id="avoidHub"></select></label>
+   <label>Rank by<select id="planRank"><option value="days">Fastest</option><option value="cost">Lowest cost</option><option value="carbon">Lowest emissions</option></select></label>
+   <label class="planner-cargo">Cargo notes for the analyst <textarea id="cargo" maxlength="300" placeholder="For example, palletized machinery or refrigerated cargo"></textarea></label>
+  </div>
+  <div class="controls"><button type="submit">Compare options</button><button id="planAI" type="button">Get a shipment brief</button></div>
+ </form>
+ <div id="planResults" class="scroll result" aria-live="polite"></div>
+ <div class="layout"><div><h3>Freight documents</h3><details class="disclosure"><summary>Open checklist</summary><p>Commercial invoice, packing list, transport document, HS classification and cargo permits. Confirm requirements with your broker.</p></details></div><div><h3>Current disruption signals</h3><div class="controls"><select id="signalCity" aria-label="Disruption location"></select><button id="refreshSignals">Check news & weather</button></div><div class="result" id="signals" role="status"></div></div></div>
+</section>
+<section id="tracking" class="card" aria-labelledby="trackingTitle">
+  <h2 class="tracking-heading">Shipment tracking</h2>
+  <form id="shipmentPicker" class="controls">
+    <label for="shipmentID">Tracking ID</label>
+    <input id="shipmentID" list="shipmentIDs" placeholder="TF-1042" required>
+    <datalist id="shipmentIDs"></datalist>
+    <button id="findShipment" type="submit">Find shipment</button>
+  </form>
+  <p id="trackingError" role="status"></p>
+  <h3 id="trackingTitle"></h3>
+  <p id="trackingStatus"></p>
+  <div class="controls shipment-actions">
+    <button id="rerouteShipment">Compare onward routes</button><button id="showShipment">Show on globe</button>
+    <a id="trackingLink" href="?track=TF-1042#tracking">Open shareable tracking view</a>
+  </div>
+  <div class="tracking-layout">
+    <figure class="location-map">
+      <iframe id="shipmentMap" title="Shipment location map" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <figcaption><a id="shipmentMapLink" target="_blank" rel="noopener noreferrer">Open in OpenStreetMap</a></figcaption>
+    </figure>
+    <div id="shipmentHistory">
+      <h3>Shipment history</h3>
+      <p id="historyDate"></p>
+      <ol id="milestones"></ol>
+    </div>
+  </div>
+  <div class="controls"><button id="billingSync">Check PayPal invoice</button><a id="trackingDraft" href="#paypal">Open billing</a></div>
+  <p id="trackingBilling" role="status" class="result"></p>
+  <details class="disclosure" id="trackingSources">
+    <summary>Tracking sources</summary>
+    <p>Poseidon generates these shipment records. The map marks the reported hub. For live vessel positions, search MarineTraffic by vessel name or IMO number.</p>
+    <a href="https://www.marinetraffic.com/" target="_blank" rel="noopener noreferrer">Open MarineTraffic</a>
+  </details>
+</section>
+<section id="branch" class="card"><h2>Branch finance</h2><div id="finance"><label class="branch-picker">Branch <select id="branchSelect"></select></label><small id="region"></small><h2 id="officeName"></h2><div id="branchMetrics" class="metrics"></div><div class="scroll" id="costs"></div><div class="layout"><div><h3>Currency impact</h3><label class="row" for="officeFx">Exchange rate change <output id="officeFxLabel"></output></label><input id="officeFx" type="range" min="-20" max="20" value="0"><div id="currencyFacts"></div></div><div><h3>Debt & liquidity</h3><div id="debtFacts"></div></div></div></div></section><details id="trade"><summary>Supplier cash forecast</summary><h2>Supplier cash position</h2><div class="metrics"><div class="card"><small>SELECTED RECEIVABLE</small><strong id="receivable"></strong></div><div class="card"><small>SUPPLIER DUE</small><strong id="supplier"></strong></div><div class="card signal"><small>PROJECTED CASH GAP</small><strong id="gap"></strong></div></div>
+<div class="layout trade-layout"><section class="card"><h2>Trade corridors</h2><p>Compare receivables and supplier payments by corridor.</p><div class="routes" id="routes"></div><div id="shipmentFacts"></div></section><div class="side"><section class="card signal"><h2 id="title"></h2><div id="facts"></div></section>
+<section class="card"><h3>Adjust collection and exchange rates</h3><label class="row">Collection delay <output id="delayOut"></output></label><input id="delay" aria-label="Collection delay" type="range" min="0" max="20" value="6"><label class="row">Customer FX movement <output id="fxOut"></output></label><input id="fx" aria-label="Customer FX movement" type="range" min="-20" max="20" value="0"><p class="result" id="explain"></p></section></div></div>
+</details>
+<div class="layout service-layout">
+  <section id="paypal" class="card">
+    <h2>PayPal Sandbox</h2>
+    <!-- INVOICE_PREVIEW -->
+    <p>Sync recent invoices or create an unsent freight draft for TF-1042.</p>
+    <div class="controls"><button id="sync">Sync invoices</button><button id="draft">Create draft for TF-1042</button></div>
+    <div id="syncStatus" class="result" role="status">Awaiting sync.</div>
+    <div class="scroll" id="ledger"></div>
+  </section>
+  <section id="analyst" class="card">
+    <h2>Freight analyst</h2>
+    <p>Ask about the selected branch, shipment, or route. Responses use Groq.</p>
+    <form class="controls" id="ask"><input type="text" aria-label="Question for the analyst" id="question" required maxlength="500" value="What drove this branch’s budget variance?"><button type="submit">Ask analyst</button></form>
+    <p><label><input type="checkbox" id="includeSandbox"> Allow the analyst to read PayPal invoice fields</label></p>
+    <div class="result" id="answer" role="status"></div>
+  </section>
+</div>
+<footer>
+  <details class="disclosure" id="dataSources">
+    <summary>Data sources</summary>
+    <p>Shipment histories and branch figures are generated records. Route costs, transit times, emissions, and cash projections are planning estimates. PayPal invoices come from Sandbox. Port signals use Google News and Open-Meteo. Port maps use OpenStreetMap.</p>
+  </details>
+</footer>
+</div>
+</main>
+<script type="module">
+/* BRANCH_MODULE */
+const $=id=>document.getElementById(id);
+const cities=Object.fromEntries(hubs.map(([name,lat,lon])=>[name,[lat,lon]]));
+const hubIndex=new Map(hubs.map(hub=>[hub[0],hub]));
+const branchIndex=new Map(branches.map((branch,i)=>[branch.name,i]));
+const laneColor=i=>['#57e7d3','#fe7d65','#c4a7ff','#ffce61','#9ebfff','#a5e966','#ed99d7','#f5a858','#6edaff','#8ae2a4','#ff9788','#b8d5f6','#eab6ff'][i]||'hsl('+((i*137.5)%360)+' 88% 70%)';
+const cases=[
+ {from:'Berlin',hub:'Mumbai',vendor:'Singapore',currency:'EUR',amount:48000,bill:36000,cash:14000,collection:3,due:7,shipment:'Awaiting departure'},
+ {from:'Tokyo',hub:'Hanoi',vendor:'Dubai',currency:'JPY',amount:27500,bill:21000,cash:12000,collection:2,due:10,shipment:'In transit'},
+ {from:'Toronto',hub:'London',vendor:'Dubai',currency:'CAD',amount:33000,bill:44500,cash:16000,collection:2,due:12,shipment:'At destination'}
+];
+let selected=0,office=0,spin=13,tilt=25,zoom=1,focus=null,dirty=true,location=null,lane=null;
+const atlasMotion=matchMedia('(prefers-reduced-motion: reduce)');
+let rotate=!atlasMotion.matches;
+const usd=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
+function scenario(){const c=cases[selected],delay=+$('delay').value,fx=+$('fx').value;const arrival=c.collection+delay,eligible=arrival<=c.due?Math.round(c.amount*(1+fx/100)):0;return {...c,delay,fx,arrival,eligible,gap:Math.max(0,c.bill-c.cash-eligible)}}
+function rows(id,pairs){$(id).replaceChildren(...pairs.map(([k,v])=>{const line=document.createElement('div');line.className='row';line.append(k,Object.assign(document.createElement('strong'),{textContent:v}));return line}))}
+function table(id, headings, records){const t=document.createElement('table');const head=t.createTHead().insertRow();for(const label of headings){const h=document.createElement('th');h.scope='col';h.textContent=label;head.append(h)}const body=t.createTBody();for(const record of records){const row=body.insertRow();for(const value of record)row.insertCell().textContent=value}$(id).replaceChildren(t)}
+function renderBranch(){
+ const b=branches[office], fx=+$('officeFx').value,m=branchFinancials(b,fx);const local=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:b.currency,maximumFractionDigits:0}).format(n);
+ $('region').textContent=b.region;$('officeName').textContent=b.name;
+ $('branchMetrics').replaceChildren(...[['MONTHLY OPERATING COST',usd(m.actualUsd)],['VS. BUDGET',usd(m.varianceUsd)],['AVAILABLE CASH',usd(m.cashUsd)]].map(([label,value])=>{const card=document.createElement('div');card.className='card';card.append(Object.assign(document.createElement('small'),{textContent:label}),Object.assign(document.createElement('strong'),{textContent:value}));return card}));
+ table('costs',['Expense','Budget · local','Actual · local','Actual · USD'],b.costs.map(([name,budget,actual])=>[name,local(budget),local(actual),usd(actual*m.rate)]));
+ $('officeFxLabel').textContent=fx+'%';
+ rows('currencyFacts',[['USD per '+b.currency,m.rate.toPrecision(4)],['Local spending effect',usd(m.spendEffectUsd)],['FX effect',usd(m.fxEffectUsd)],['Monthly revenue',local(b.revenue)]]);
+ rows('debtFacts',[[b.loan.name,local(b.loan.principal)],['Next payment · day '+b.loan.day,local(b.loan.due)],['Cash after this debt payment',usd(m.remainingAfterDebtUsd)]]);
+}
+function render(){renderBranch();const s=scenario();$('receivable').textContent=usd(s.amount);$('supplier').textContent=usd(s.bill);$('gap').textContent=usd(s.gap);$('title').textContent=s.from+' → '+s.hub;
+rows('shipmentFacts',[['Goods route',s.vendor+' → '+s.hub+' → '+s.from],['Shipment status',s.shipment]]);
+const facts=[['Receivable currency',s.currency],['Supplier',s.vendor+' · due day '+s.due],['Available cash',usd(s.cash)]];
+$('facts').replaceChildren(...facts.map(([k,v])=>{const div=document.createElement('div');div.className='row';div.append(k,Object.assign(document.createElement('strong'),{textContent:v}));return div}));
+$('delayOut').textContent='+'+s.delay+' days';$('fxOut').textContent=s.fx+'%';$('explain').textContent='Collection on day '+s.arrival+' · '+usd(s.eligible)+' available from this receivable by supplier due day '+s.due+'.';draw()}
+for (const [index, corridor] of cases.entries()) {
+ const button = document.createElement('button');
+ button.textContent = corridor.from+' → '+corridor.hub;
+ button.setAttribute('aria-pressed', index === 0);
+ button.onclick = () => {
+  selected = index;
+  [...$('routes').children].forEach(choice => choice.setAttribute('aria-pressed', choice === button));
+  render();
+ };
+ $('routes').append(button);
+}
+function setRotation(enabled){rotate=enabled;$('rotation').setAttribute('aria-pressed',rotate);$('rotation').textContent=rotate?'Pause rotation':'Resume rotation'}
+function accent(value){
+ const theme = document.documentElement.style;
+ if(value)theme.setProperty('--location-accent',value);
+ else theme.removeProperty('--location-accent');
+ mapAccent=value||defaultMapAccent;dirty=true;
+}
+function selectLocation(name){const [city,lat,lon,region,color]=hubIndex.get(name);location=city;lane=null;setSignalCity(city);renderPort(city);
+ if(branchIndex.has(city))selectBranch(branchIndex.get(city));
+ setRotation(false);focus={lon,lat,zoom:1.32};accent(color);
+ $('atlasTitle').textContent=city;$('atlasLabel').textContent=region.toUpperCase();
+ $('atlasCopy').textContent=branchIndex.has(city)?'Company office · branch finance and connected routes':'Explore port arrivals, departures and freight routes';
+ $('question').value=branchIndex.has(city)?'What drove '+city+'’s budget variance?':'Compare branch costs across the network.';
+ [...$('routes').children].forEach((x,j)=>x.setAttribute('aria-pressed',j===selected));renderLocations();renderLaneDetails();render()}
+function renderLocations(){const query=$('citySearch').value.trim().toLowerCase();const officesOnly=$('mapLayer').value==='offices';
+ const matches=hubs.filter(([name,,,region])=>(!officesOnly||branchIndex.has(name))&&(!query||(name+' '+region).toLowerCase().includes(query)));
+ $('locationCount').textContent=matches.length+' locations';
+ const focused = $('offices').contains(document.activeElement) ? document.activeElement.textContent : null;
+ $('offices').replaceChildren(...matches.map(([name])=>{const button=document.createElement('button');button.textContent=name;button.setAttribute('aria-pressed',name===location);button.onclick=()=>selectLocation(name);return button}));
+ if (!matches.length) $('offices').textContent = 'No locations match your search.';
+ if (focused) [...$('offices').children].find(button => button.textContent === focused)?.focus({preventScroll:true});
+}
+function laneButton(item){const b=document.createElement('button');b.textContent=item.name;b.style.setProperty('--lane',laneColor(lanes.indexOf(item)));b.className='lane-button';b.onclick=()=>{selectLane(item);$('network').scrollIntoView({block:'start'})};return b}
+function selectLane(item){lane=item;if($('mapLayer').value==='offices'){$('mapLayer').value='all';renderLocations()}setRotation(false);const mid=item.path[Math.floor(item.path.length/2)];const [lat,lon]=cities[mid];focus={lon,lat,zoom:1};renderLaneDetails();dirty=true}
+function renderLaneDetails(){
+ const details = $('laneDetails');
+ details.hidden = !lane;
+ if (lane) $('laneSummary').textContent = lane.mode+' · '+lane.path.join(' → ')+' · '+lane.days+' days · '+usd(lane.cost)+' · '+lane.carbon.toLocaleString()+' kg CO₂e';
+}
+function selectBranch(index){
+ office = index;
+ selected = branches[index].route;
+ $('branchSelect').value = String(index);
+ $('question').value = 'What drove '+branches[index].name+'’s budget variance?';
+ [...$('routes').children].forEach((button, i) => button.setAttribute('aria-pressed', i === selected));
+}
+$('citySearch').oninput=renderLocations;
+$('mapLayer').onchange=()=>{renderLocations();dirty=true};
+$('laneButtons').replaceChildren(...lanes.map(laneButton));
+$('rotation').onclick=()=>{if(!rotate)focus=null;setRotation(!rotate)};
+$('overview').onclick=()=>{location=null;lane=null;$('port').hidden=true;selectBranch(0);$('atlasLabel').textContent='GLOBAL NETWORK';$('atlasTitle').textContent='Freight atlas';$('atlasCopy').textContent='Find a city or drag the globe to explore ports and trade routes.';$('question').value='What drove this branch’s budget variance?';$('citySearch').value='';$('mapLayer').value='all';accent(null);setRotation(false);focus={lon:13,lat:25,zoom:1};[...$('routes').children].forEach((x,i)=>x.setAttribute('aria-pressed',i===0));renderLocations();renderLaneDetails();render()};
+setRotation(rotate);
+atlasMotion.addEventListener('change', event => {
+ if(event.matches)setRotation(false);
+});
+$('delay').oninput=$('fx').oninput=$('officeFx').oninput=render;
+async function call(path,body){
+ const response = await fetch(path,body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{});
+ const data = await response.json().catch(() => null);
+ if(!response.ok || !data) throw new Error(data?.error || 'The request could not be completed. Try again.');
+ return data;
+}
+async function syncInvoices(){
+ const status = $('syncStatus');
+ status.textContent = 'Syncing invoices…';
+ try {
+  const {invoices,syncedAt,source} = await call('/api/invoices');
+  const time = new Date(syncedAt).toLocaleTimeString();
+  status.textContent = source === 'preview'
+   ? 'Loaded '+invoices.length+' preview invoices · '+time
+   : invoices.length ? 'Synced '+invoices.length+' invoice(s) · '+time : 'No invoices in PayPal Sandbox yet.';
+  if (invoices.length) {
+   table('ledger',['Invoice','Status','Amount'],invoices.map(item => [item.number||item.id,item.status,[item.amount,item.currency].filter(Boolean).join(' ')]));
+  } else {
+   $('ledger').replaceChildren();
+  }
+ } catch (error) {
+  $('ledger').replaceChildren();
+  status.textContent = error.message;
+ }
+}
+function setBillingBusy(busy){
+ $('sync').disabled = busy;
+ $('draft').disabled = busy;
+}
+$('sync').onclick = async () => {
+ setBillingBusy(true);
+ try { await syncInvoices(); }
+ finally { setBillingBusy(false); }
+};
+$('draft').onclick = async () => {
+ const status = $('syncStatus');
+ setBillingBusy(true);
+ status.textContent = 'Checking for an existing draft…';
+ try {
+  const {status: result,source} = await call('/api/invoices/draft',{confirm:true});
+  await syncInvoices();
+  const message = source === 'preview' ? 'TF-1042 is already in the preview as a draft.'
+   : result === 'existing' ? 'TF-1042 already exists in PayPal Sandbox.' : 'TF-1042 draft created. It remains unsent.';
+  status.textContent = message+' '+status.textContent;
+ } catch (error) {
+  status.textContent = error.message;
+ } finally {
+  setBillingBusy(false);
+ }
+};
+$('ask').onsubmit = async event => {
+ event.preventDefault();
+ const submit = event.currentTarget.querySelector('button');
+ if (submit.disabled) return;
+ const answer = $('answer');
+ submit.disabled = $('planAI').disabled = true;
+ answer.textContent = 'Reviewing the evidence…';
+ try {
+  const result = await call('/api/analyst',{
+   question:$('question').value, branch:office, officeFx:+$('officeFx').value,
+   signalCity:$('signalCity').value, shipmentId:activeShipment.id,
+   plan:{origin:$('planOrigin').value,destination:$('planDestination').value,avoid:$('avoidHub').value,rank:$('planRank').value},
+   lane:lane?lanes.indexOf(lane):null, corridor:selected, delay:+$('delay').value,
+   fx:+$('fx').value, includeSandbox:$('includeSandbox').checked
+  });
+  const labels = {
+   compare_branches:'Branch comparison',compare_freight_routes:'Freight routes',
+   check_port_signals:'Port news and weather',lookup_paypal_invoices:$('invoicePreview') ? 'Preview invoices' : 'PayPal Sandbox invoices'
+  };
+  const sources = result.tools.map(name => labels[name]).filter(Boolean);
+  answer.textContent = result.answer + (sources.length ? '\n\nSources · '+sources.join(', ') : '');
+ } catch (error) {
+  answer.textContent = error.message;
+ } finally {
+  submit.disabled = $('planAI').disabled = false;
+ }
+};
+const option=(name,value=name)=>Object.assign(document.createElement('option'),{textContent:name,value});
+$('branchSelect').replaceChildren(...branches.map((branch, i) => option(branch.name, String(i))));
+$('branchSelect').onchange = event => {
+ selectBranch(Number(event.target.value));
+ render();
+};
+const endpoints=hubs.map(([name])=>name).sort((a,b)=>a.localeCompare(b));
+for(const id of ['planOrigin','planDestination'])$(id).replaceChildren(...endpoints.map(name=>option(name)));
+$('planOrigin').value='Shanghai';$('planDestination').value='Rotterdam';
+const waypoints=Array.from(new Set(lanes.flatMap(item=>item.path))).sort();
+$('avoidHub').replaceChildren(option('None',''),...waypoints.map(name=>option(name)));
+$('signalCity').replaceChildren(...hubs.map(([name])=>name).sort().map(name=>option(name)));
+$('signalCity').value='Singapore';
+let planChoices=[];
+function comparePlan(){
+ const origin=$('planOrigin').value,destination=$('planDestination').value,avoid=$('avoidHub').value,metric=$('planRank').value;
+ planChoices=routeOptions(lanes,origin,destination,avoid,metric);
+ const out=$('planResults');out.replaceChildren();
+ if(!planChoices.length){
+  const library = Object.assign(document.createElement('a'),{href:'#laneLibrary',textContent:'Browse trade lanes'});
+  library.onclick = () => { $('laneLibrary').open = true; };
+  out.append('No routes match these ports and constraints. Try clearing the waypoint filter or ',library,'.');
+  return;
+ }
+ for(const [i,item] of planChoices.entries()){
+  const row=document.createElement('div');row.className='row';
+  const button=laneButton(lanes[item.index]);const note=document.createElement('span');
+  note.textContent=(i===0?'Top by selected metric · ':'')+item.days+' days · '+usd(item.cost)+' · '+item.carbon.toLocaleString()+' kg CO₂e';
+  row.append(button,note);out.append(row);
+ }
+}
+$('planner').onsubmit=e=>{e.preventDefault();comparePlan()};
+$('compareLane').onclick = () => {
+ if (!lane) return;
+ $('planOrigin').value = lane.path[0];
+ $('planDestination').value = lane.path.at(-1);
+ $('avoidHub').value = '';
+ comparePlan();
+};
+$('planAI').onclick=()=>{
+ comparePlan();
+ const cargo = $('cargo').value.trim();
+ const route = $('planOrigin').value+' to '+$('planDestination').value;
+ const avoid = $('avoidHub').value;
+ $('question').value = 'Assess current disruption signals and compare route options from '+route+'.'
+  +(avoid ? ' Avoid '+avoid+'.' : '')+(cargo ? ' Cargo notes: '+cargo : '');
+ $('analyst').scrollIntoView({block:'start'});$('ask').requestSubmit();
+};
+let signalRequest = 0;
+function clearSignals(){
+ signalRequest++;
+ $('refreshSignals').disabled = false;
+ $('signals').replaceChildren();
+}
+function setSignalCity(city){
+ if ($('signalCity').value === city) return;
+ $('signalCity').value = city;
+ clearSignals();
+}
+$('signalCity').onchange = clearSignals;
+$('refreshSignals').onclick=async()=>{
+ const b=$('refreshSignals'),city=$('signalCity').value,out=$('signals');b.disabled=true;out.textContent='Checking '+city+'…';
+ const requestId = ++signalRequest;
+ try{
+  const data=await call('/api/signals?city='+encodeURIComponent(city));
+  if (requestId !== signalRequest) return;
+  out.replaceChildren();
+  const stamp=document.createElement('p');stamp.textContent=city+' · checked '+new Date(data.checkedAt).toLocaleString();out.append(stamp);
+  const weather=document.createElement('p');weather.textContent=data.weather?.length?'Open-Meteo · 3-day outlook: '+data.weather.map(d=>d.date+' · '+(d.gustKmh??'—')+' km/h gusts, '+(d.rainMm??'—')+' mm rain').join(' | '):'Weather feed unavailable.';out.append(weather);
+  if(data.news?.length){const list=document.createElement('ul');for(const item of data.news){const li=document.createElement('li'),a=document.createElement('a');a.href=item.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=item.title;li.append(a,' · '+item.source+' · '+new Date(item.publishedAt).toLocaleDateString());list.append(li)}out.append(list)}
+  else {const p=document.createElement('p');p.textContent=data.news===null?'News feed unavailable.':'No matching freight headlines returned in the last 14 days.';out.append(p)}
+ }catch(error){if(requestId === signalRequest)out.textContent=error.message}
+ finally{if(requestId === signalRequest)b.disabled=false}
+};
+const customerID=new URLSearchParams(window.location.search).get('track');
+let activeShipment=shipments.find(item=>item.id===customerID)||demoShipment;
+const customerView=!!customerID&&shipments.some(item=>item.id===customerID);
+if(customerView)document.body.classList.add('customer-mode');
+$('shipmentIDs').replaceChildren(...shipments.map(item=>option(item.id)));
+const shipmentDate = new Intl.DateTimeFormat('en',{dateStyle:'medium',timeZone:'UTC'});
+function formatShipmentDate(date){ return shipmentDate.format(new Date(date)); }
+
+function setPortMap(frameId, linkId, city){
+ const frame = $(frameId);
+ if (frame.dataset.city === city) return;
+ const [lat,lon] = cities[city];
+ const horizontal = Math.min(.65,.28/Math.cos(lat * Math.PI/180));
+ const bounds = [lon-horizontal,lat-.16,lon+horizontal,lat+.16].map(value => value.toFixed(4));
+ const mapUrl = new URL('https://www.openstreetmap.org/export/embed.html');
+ mapUrl.search = new URLSearchParams({bbox:bounds.join(','),layer:'mapnik',marker:lat+','+lon});
+ frame.title = city+' location map';
+ frame.src = mapUrl.href;
+ frame.dataset.city = city;
+ $(linkId).href = 'https://www.openstreetmap.org/?mlat='+lat+'&mlon='+lon+'#map=11/'+lat+'/'+lon;
+}
+
+$('openPortMap').onclick = () => {
+ if (!location) selectLocation(demoShipment.location);
+};
+function openTracking(item){activeShipment=item;renderTracking();$('tracking').scrollIntoView({block:'start'})}
+function renderPort(city){
+ $('port').hidden=false;$('portTitle').textContent=city;
+ setPortMap('portMap','portMapLink',city);
+ $('portSignals').onclick=()=>{setSignalCity(city);$('refreshSignals').click();$('wayfinder').scrollIntoView({block:'start'})};
+ $('planFromPort').onclick=()=>{$('planOrigin').value=city;$('avoidHub').value='';comparePlan();$('wayfinder').scrollIntoView({block:'start'})};
+ const groups=[
+  ['Last reported here',shipments.filter(x=>x.location===city&&x.status!=='Delivered')],
+  ['Expected arrivals',shipments.filter(x=>x.destination===city&&x.location!==city&&x.status!=='Delivered')],
+  ['Departed or completed',shipments.filter(x=>(x.origin===city&&x.location!==city)||(x.destination===city&&x.status==='Delivered'))]
+ ];
+ $('portManifest').replaceChildren(...groups.map(([label,items])=>{
+  const section=document.createElement('section');const h=document.createElement('h3');h.textContent=label+' · '+items.length;section.append(h);
+  if(!items.length)section.append('No shipments.');
+  for(const item of items){const b=document.createElement('button');b.textContent=item.id+' · '+item.origin+' → '+item.destination;b.onclick=()=>openTracking(item);section.append(b)}return section;
+ }));
+}
+function renderTracking(){
+ const item=activeShipment;$('shipmentID').value=item.id;$('trackingError').textContent='';
+ $('trackingTitle').textContent=item.id+' · '+item.origin+' → '+item.destination;
+ const arrival = item.status === 'Delivered'
+  ? 'Arrived '+formatShipmentDate(item.revised)
+  : 'Expected '+formatShipmentDate(item.revised);
+ const original = item.planned !== item.revised ? ' · Originally '+formatShipmentDate(item.planned) : '';
+ $('trackingStatus').textContent=item.status+' · '+item.location+' · '+arrival+original+' · '+item.cargo;
+ $('historyDate').textContent='Records through '+formatShipmentDate(shipmentRecordDate);
+ $('trackingLink').href='?track='+encodeURIComponent(item.id)+'#tracking';
+ $('trackingBilling').textContent=item.invoice?'Sandbox invoice '+item.invoice+' · awaiting sync.':'No PayPal invoice is linked to this shipment.';
+ $('billingSync').hidden=!item.invoice;$('trackingDraft').hidden=!item.invoice||customerView;$('rerouteShipment').disabled=item.status==='Delivered';
+ $('milestones').replaceChildren(...item.events.map(([date,event]) => {
+  const milestone = document.createElement('li');
+  const time = Object.assign(document.createElement('time'),{dateTime:date,textContent:formatShipmentDate(date)});
+  milestone.append(time,' · '+event);
+  return milestone;
+ }));
+ setPortMap('shipmentMap','shipmentMapLink',item.location);
+}
+$('shipmentPicker').onsubmit = event => {
+ event.preventDefault();
+ const item = shipments.find(shipment => shipment.id === $('shipmentID').value.trim().toUpperCase());
+ if(item) {
+  activeShipment = item;
+  renderTracking();
+ } else {
+  $('trackingError').textContent = 'Tracking ID not found. Choose an ID from the list.';
+ }
+};
+$('showShipment').onclick=()=>{selectLocation(activeShipment.location);const path=lanes.find(x=>x.path[0]===activeShipment.origin&&x.path.at(-1)===activeShipment.destination);if(path){lane=path;renderLaneDetails();dirty=true}$('network').scrollIntoView({block:'start'})};
+$('rerouteShipment').onclick=()=>{$('planOrigin').value=activeShipment.location;setSignalCity(activeShipment.location);$('planDestination').value=activeShipment.destination;$('avoidHub').value='';comparePlan();$('wayfinder').scrollIntoView({block:'start'})};
+$('billingSync').onclick=async()=>{const item=activeShipment,b=$('billingSync'),out=$('trackingBilling');b.disabled=true;out.textContent='Checking PayPal Sandbox…';try{
+ const {matches,source}=await call('/api/tracking-invoice?shipment='+encodeURIComponent(item.id));if(item!==activeShipment)return;
+ out.textContent=matches.length===1?matches[0].number+' · '+matches[0].status+' · '+[matches[0].amount,matches[0].currency].filter(Boolean).join(' '):matches.length?'Multiple matching Sandbox invoices.':'No matching invoice in PayPal Sandbox.';
+ if(source === 'preview')out.textContent='Invoice preview · '+out.textContent;
+ }catch(error){if(item===activeShipment)out.textContent=error.message}finally{b.disabled=false}};
+renderTracking();
+if (customerID && !customerView) $('trackingError').textContent = 'Tracking link not found. Enter a valid tracking ID.';
+
+comparePlan();
+const land=[
+ [[72,-165],[72,-98],[80,-65],[62,-60],[48,-53],[44,-67],[27,-80],[19,-89],[9,-80],[8,-86],[22,-106],[32,-118],[52,-132],[59,-151],[63,-166]],
+ [[12,-79],[13,-68],[6,-52],[-6,-35],[-23,-41],[-39,-58],[-55,-67],[-44,-74],[-20,-71],[-5,-81]],
+ [[59,-49],[64,-59],[78,-72],[83,-42],[77,-18],[64,-39]],
+ [[36,-10],[48,-6],[59,4],[71,28],[69,52],[75,86],[72,123],[65,174],[55,158],[48,143],[38,125],[23,117],[9,107],[4,101],[21,92],[24,89],[7,78],[19,72],[26,65],[27,53],[13,45],[31,33],[36,26],[43,30],[45,15],[38,13],[43,4],[37,-3]],
+ [[36,-10],[37,10],[32,31],[12,44],[10,51],[-11,40],[-33,28],[-35,18],[-19,12],[-1,9],[5,-3],[14,-17],[24,-15]],
+ [[-12,130],[-10,142],[-23,154],[-39,146],[-34,116],[-23,113]],
+ [[31,130],[39,141],[45,145],[42,141],[35,135]],
+ [[6,95],[1,104],[-7,106],[-8,116],[-5,120],[-3,112],[3,110],[7,117],[1,119],[-5,116],[-6,104]]
+];
+const canvas=$('globe'),ctx=canvas.getContext('2d'),rad=Math.PI/180;
+const defaultMapAccent=getComputedStyle(document.documentElement).getPropertyValue('--sea-glass').trim();
+let radius,cx,cy,mapAccent=defaultMapAccent;
+let sinSpin,cosSpin,sinTilt,cosTilt;
+function vector(lat,lon){lat*=rad;lon*=rad;return [Math.cos(lat)*Math.sin(lon),Math.sin(lat),Math.cos(lat)*Math.cos(lon)]}
+function projectVector([vx,y,vz],lift=1){const x=vx*cosSpin-vz*sinSpin,z=vz*cosSpin+vx*sinSpin;return [cx+radius*x*lift,cy-radius*(y*cosTilt-z*sinTilt)*lift,z*cosTilt+y*sinTilt]}
+function arc(from,to){const a=vector(...cities[from]),b=vector(...cities[to]);const angle=Math.acos(Math.max(-1,Math.min(1,a.reduce((dot,v,i)=>dot+v*b[i],0))));
+ return Array.from({length:27},(_,i)=>{const t=i/26,d=Math.sin(angle);return {v:a.map((x,j)=>d?(x*Math.sin((1-t)*angle)+b[j]*Math.sin(t*angle))/d:x),lift:1+(.05+angle*.06)*Math.sin(Math.PI*t)}});
+}
+const geometry=lanes.map(item=>item.path.slice(1).map((name,i)=>arc(item.path[i],name)));
+const graticule=[...Array.from({length:5},(_,n)=>Array.from({length:91},(_,i)=>vector(n*30-60,i*4-180))),...Array.from({length:12},(_,n)=>Array.from({length:61},(_,i)=>vector(i*3-90,n*30-180)))];
+const cityVectors=new Map(hubs.map(([name,lat,lon])=>[name,vector(lat,lon)]));
+function line(points,color,width=1){ctx.beginPath();let active=false;for(const p of points){if(p[2]<0){active=false;continue}if(active)ctx.lineTo(p[0],p[1]);else ctx.moveTo(p[0],p[1]);active=true}ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke()}
+function inside(lat,lon,poly){let hit=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [a,b]=poly[i],[c,d]=poly[j];if((a>lat)!==(c>lat)&&lon<(d-b)*(lat-a)/(c-a)+b)hit=!hit}return hit}
+const dots=[];for(let lat=-58;lat<=82;lat+=2.1){for(let lon=-179;lon<180;lon+=2.4/Math.max(.25,Math.cos(lat*rad))){if(land.some(p=>inside(lat,lon,p)))dots.push(vector(lat,lon))}}
+function draw(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;
+ const scale=Math.min(devicePixelRatio||1,1.5);if(canvas.width!==Math.round(w*scale)||canvas.height!==Math.round(h*scale)){canvas.width=Math.round(w*scale);canvas.height=Math.round(h*scale)}
+ ctx.setTransform(scale,0,0,scale,0,0);ctx.clearRect(0,0,w,h);cx=w*.5;cy=h*.47;radius=Math.min(w*.40,h*.39)*zoom;
+ const lon=spin*rad,lat=tilt*rad;sinSpin=Math.sin(lon);cosSpin=Math.cos(lon);sinTilt=Math.sin(lat);cosTilt=Math.cos(lat);
+ const g=ctx.createRadialGradient(cx-radius*.3,cy-radius*.37,radius*.04,cx,cy,radius);g.addColorStop(0,'#1e4353');g.addColorStop(.72,'#102f3e');g.addColorStop(1,'#091c28');
+ ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();ctx.strokeStyle=mapAccent;ctx.globalAlpha=.4;ctx.lineWidth=1.5;ctx.stroke();ctx.globalAlpha=1;
+ for(const grid of graticule)line(grid.map(v=>projectVector(v)),'#b3e4e52b');
+ ctx.fillStyle=mapAccent;for(const d of dots){const [x,y,z]=projectVector(d);if(z>0){ctx.globalAlpha=.13+z*.58;ctx.fillRect(x,y,1.45,1.45)}}ctx.globalAlpha=1;
+ const layer=$('mapLayer').value;
+ if(layer!=='offices'){
+   for(const [i,item] of lanes.entries()){const active=item===lane||(!lane&&location&&item.path.includes(location));ctx.globalAlpha=active ? .95 : (lane||location) ? .18 : .52;
+     for(const segment of geometry[i])line(segment.map(({v,lift})=>projectVector(v,lift)),laneColor(i),active?2.5:1.15);
+   }
+ }
+ ctx.globalAlpha=1;hits=[];const labels=[];
+ for(const [name] of hubs){const isOffice=branchIndex.has(name);if(layer==='offices'&&!isOffice)continue;const [x,y,z]=projectVector(cityVectors.get(name));if(z<.025)continue;
+   const active=name===location;hits.push({x,y,name,z,active,isOffice});ctx.beginPath();ctx.arc(x,y,active?7:isOffice?3.8:2.3,0,Math.PI*2);ctx.fillStyle=active?mapAccent:isOffice?'#effbfb':'#8bb7c8';ctx.fill();
+   if(active||isOffice||lane?.path.includes(name))labels.push({x,y,name,active,z});
+ }
+ labels.sort((a,b)=>Number(b.active)-Number(a.active)||b.z-a.z);const drawn=[];
+ ctx.font='700 12px system-ui';for(const l of labels){const width=ctx.measureText(l.name).width;if(drawn.some(d=>Math.abs(l.y-d.y)<14&&l.x<d.x+d.width+8&&d.x<l.x+width+8))continue;
+  drawn.push({...l,width});ctx.lineWidth=3;ctx.strokeStyle='#071219';ctx.strokeText(l.name,l.x+9,l.y-7);ctx.fillStyle=l.active?mapAccent:'#f1f8fa';ctx.fillText(l.name,l.x+9,l.y-7);}
+}
+let pointer,hits=[],last=0,atlasVisible=true;
+new IntersectionObserver(([entry])=>{atlasVisible=entry.isIntersecting;dirty=true}).observe(canvas);
+canvas.onpointerdown=e=>{pointer={x:e.clientX,y:e.clientY,moved:false};setRotation(false);focus=null;canvas.setPointerCapture(e.pointerId)};
+canvas.onpointermove=e=>{if(!pointer)return;const dx=e.clientX-pointer.x,dy=e.clientY-pointer.y;if(!pointer.moved&&Math.hypot(dx,dy)<4)return;pointer.moved=true;spin-=dx*.45;tilt=Math.max(-80,Math.min(80,tilt+dy*.45));pointer.x=e.clientX;pointer.y=e.clientY;dirty=true};
+canvas.onpointerup=e=>{if(pointer&&!pointer.moved){const r=canvas.getBoundingClientRect();const distance=h=>Math.min(Math.hypot(h.x-e.clientX+r.left,h.y-e.clientY+r.top),h.isOffice||h.active?Math.hypot(h.x+18-e.clientX+r.left,h.y-9-e.clientY+r.top)+4:Infinity);const hit=hits.filter(h=>distance(h)<18).sort((a,b)=>distance(a)-distance(b))[0];if(hit)selectLocation(hit.name)}pointer=null};
+canvas.onpointercancel=()=>{pointer=null};
+function animate(now){
+ const dt=Math.min(now-last,40);
+ last=now;
+ if(atlasVisible){
+  if(focus){
+   const delta=((focus.lon-spin+180)%360+360)%360-180;
+   const settled=Math.abs(delta)+Math.abs(focus.lat-tilt)+Math.abs(focus.zoom-zoom)<.02;
+   if(atlasMotion.matches||settled){
+    spin=focus.lon;
+    tilt=focus.lat;
+    zoom=focus.zoom;
+    focus=null;
+   }else{
+    const step=1-Math.exp(-dt/140);
+    spin+=delta*step;
+    tilt+=(focus.lat-tilt)*step;
+    zoom+=(focus.zoom-zoom)*step;
+   }
+   dirty=true;
+  }else if(rotate){
+   spin=(spin+dt*.005)%360;
+   dirty=true;
+  }
+  if(dirty){dirty=false;draw()}
+ }
+ requestAnimationFrame(animate);
+}
+new ResizeObserver(()=>{dirty=true}).observe(canvas);renderLocations();renderLaneDetails();render();requestAnimationFrame(animate);
+function openLinkedSection(){
+ if (customerView) return;
+ if (window.location.hash === '#port' && $('port').hidden) {
+  selectLocation(demoShipment.location);
+  $('port').scrollIntoView({block:'start'});
+ }
+ if (window.location.hash === '#laneLibrary') $('laneLibrary').open = true;
+ if (window.location.hash === '#trade') $('trade').open = true;
+}
+window.addEventListener('hashchange', openLinkedSection);
+openLinkedSection();
+</script>
+<script type="module">
+const menu = document.getElementById('freightMenu');
+const menuToggle = document.getElementById('freightMenuToggle');
+
+function setMenuOpen(open) {
+  menu.classList.toggle('is-open', open);
+  menuToggle.setAttribute('aria-expanded', String(open));
+  menuToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+}
+
+menuToggle.addEventListener('click', () => setMenuOpen(!menu.classList.contains('is-open')));
+menu.addEventListener('click', event => {
+  if (event.target.closest('a')) setMenuOpen(false);
+});
+document.addEventListener('click', event => {
+  if (!menu.contains(event.target) && !menuToggle.contains(event.target)) setMenuOpen(false);
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && menu.classList.contains('is-open')) {
+    setMenuOpen(false);
+    menuToggle.focus();
+  }
+});
+matchMedia('(max-width: 1160px)').addEventListener('change', () => setMenuOpen(false));
+
+function revealOnScroll(motion) {
+  if (motion.matches || !('IntersectionObserver' in window)) return;
+
+  const targets = document.querySelectorAll([
+    '.atlas-heading', '.atlas-stage', '.atlas-directory', '#port .port-layout > *',
+    '#wayfinder > h2', '#wayfinder > p', '#planner', '#planResults', '#wayfinder .layout > div',
+    '#shipmentPicker', '#trackingTitle', '#trackingStatus', '.tracking-layout > *',
+    '.shipment-actions', '#trackingBilling',
+    '#branch > h2', '#officeName', '#branchMetrics', '#costs', '#finance .layout > div',
+    '#trade > summary', '#trade > .card', '#trade > .metrics > .card', '.trade-layout .card',
+    '#paypal', '#analyst'
+  ].join(', '));
+  const inset = 20;
+  const observer = new IntersectionObserver(entries => {
+    let stagger = 0;
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const component = entry.target;
+      observer.unobserve(component);
+      component.classList.remove('reveal-pending');
+      if (component.matches(':focus-within')) continue;
+      component.style.setProperty('--reveal-delay', Math.min(stagger, 140) + 'ms');
+      component.classList.add('reveal-entering');
+      stagger += 70;
+    }
+  }, { rootMargin: '0px 0px -' + inset + 'px' });
+
+  for (const component of targets) {
+    const bounds = component.getBoundingClientRect();
+    if (bounds.height && bounds.top < window.innerHeight - inset) continue;
+    component.classList.add('reveal-pending');
+    observer.observe(component);
+  }
+
+  function finishReveal(component) {
+    component.classList.remove('reveal-pending', 'reveal-entering');
+    component.style.removeProperty('--reveal-delay');
+  }
+
+  document.addEventListener('animationend', event => {
+    if (event.animationName === 'component-reveal' && event.target.classList.contains('reveal-entering')) {
+      finishReveal(event.target);
+    }
+  });
+  document.addEventListener('focusin', event => {
+    const component = event.target.closest('.reveal-pending, .reveal-entering');
+    if (component) {
+      observer.unobserve(component);
+      finishReveal(component);
+    }
+  });
+  motion.addEventListener('change', event => {
+    if (!event.matches) return;
+    observer.disconnect();
+    document.querySelectorAll('.reveal-pending, .reveal-entering').forEach(finishReveal);
+  });
+}
+
+if (!document.body.classList.contains('customer-mode')) {
+  const media = document.querySelector('.hero-media');
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  const toggle = document.getElementById('heroMotion');
+  revealOnScroll(motion);
+
+  const fadeMs = 900;
+  let current;
+  let standby;
+  let incoming;
+  let swapping = false;
+  let canBlend = true;
+  let visible = false;
+  let userPaused = false;
+
+  media.classList.add('has-poster');
+
+  function shouldPlay() {
+    return visible && !document.hidden && !userPaused && !motion.matches;
+  }
+
+  function syncPlayback() {
+    const playing = shouldPlay();
+    toggle.hidden = motion.matches || !current;
+    toggle.setAttribute('aria-pressed', String(userPaused));
+    toggle.title = userPaused ? 'Resume background video' : 'Pause background video';
+    if (playing && !current) {
+      media.append(document.getElementById('heroVideos').content.cloneNode(true));
+      [current, standby] = media.querySelectorAll('video');
+      for (const video of [current, standby]) video.addEventListener('timeupdate', crossfade);
+      toggle.hidden = false;
+    }
+    for (const video of [current, incoming]) {
+      if (!video) continue;
+      if (playing) video.play().catch(() => {});
+      else video.pause();
+    }
+  }
+
+  async function crossfade() {
+    if (swapping || !canBlend || !shouldPlay() || standby.readyState < 3 ||
+        !Number.isFinite(current.duration) || current.duration - current.currentTime > 1.15) return;
+
+    swapping = true;
+    const outgoing = current;
+    standby.currentTime = 0;
+    try {
+      await standby.play();
+    } catch {
+      canBlend = !shouldPlay();
+      swapping = false;
+      return;
+    }
+    if (!shouldPlay()) {
+      standby.pause();
+      swapping = false;
+      return;
+    }
+    incoming = standby;
+    incoming.classList.add('is-incoming', 'is-active');
+    setTimeout(() => {
+      outgoing.classList.remove('is-active');
+      outgoing.pause();
+      outgoing.currentTime = 0;
+      incoming.classList.remove('is-incoming');
+      current = incoming;
+      standby = outgoing;
+      incoming = null;
+      swapping = false;
+    }, fadeMs + 40);
+  }
+
+  toggle.addEventListener('click', () => {
+    userPaused = !userPaused;
+    syncPlayback();
+  });
+  motion.addEventListener('change', syncPlayback);
+  document.addEventListener('visibilitychange', syncPlayback);
+  const minVisibleRatio = .15;
+  new IntersectionObserver(([entry]) => {
+    visible = entry.intersectionRatio >= minVisibleRatio;
+    syncPlayback();
+  }, { threshold: minVisibleRatio }).observe(media);
+}
+</script>
+</body>
+</html>
+

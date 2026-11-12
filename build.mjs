@@ -1,0 +1,13 @@
+import {mkdir, readFile, writeFile} from 'node:fs/promises';
+let page = await readFile(new URL('./index.html',import.meta.url),'utf8');
+const branchCode = (await readFile(new URL('./branches.mjs',import.meta.url),'utf8')).replace(/^export /gm,'');
+const worker = await readFile(new URL('./worker.mjs',import.meta.url),'utf8');
+const networkCode = (await readFile(new URL('./network.mjs',import.meta.url),'utf8')).replace(/^export /gm,'');
+const planner = (await readFile(new URL('./planner.mjs',import.meta.url),'utf8')).replace(/^export /gm,'');
+const signals = await readFile(new URL('./signals.mjs',import.meta.url),'utf8');
+page = page.replace('/* BRANCH_MODULE */',()=>branchCode+'\n'+networkCode+'\n'+planner);
+const cases = page.match(/^const cases=\[[\s\S]*?^\];/m)?.[0];
+if (!cases) throw new Error('Scenario data is missing');
+const output = new URL('./dist/server/',import.meta.url);
+await mkdir(output,{recursive:true});
+await writeFile(new URL('index.js',output), 'const page = ' + JSON.stringify(page) + ';\n' + cases + '\n' + branchCode + '\n' + networkCode + '\n' + planner + '\n' + signals + '\n' + worker);
